@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mini Text Grid</title>
+<title>Text</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #fff; }
@@ -33,7 +33,9 @@
 (() => {
   "use strict";
   const ROWS = 200, COLS = 12;
-  const STORAGE_KEY = "mini-text-grid-data-v1";
+  // Keep data separate for each GitHub Pages path on the same domain.
+  const LEGACY_STORAGE_KEY = "mini-text-grid-data-v1";
+  const STORAGE_KEY = "mini-text-grid-data-v1:" + (location.pathname || "/");
   const head = document.getElementById("head-row");
   const body = document.getElementById("body-rows");
   const viewport = document.getElementById("viewport");
@@ -218,7 +220,10 @@
   }
   function loadSaved() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      // Prefer this page's own data. If it has none yet, copy the older
+      // shared dataset once so existing entries are not lost.
+      let raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) raw = localStorage.getItem(LEGACY_STORAGE_KEY);
       if (!raw) return;
       const data = JSON.parse(raw);
       if (!Array.isArray(data)) return;
